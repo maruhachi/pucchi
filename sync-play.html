@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sync-Player</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+</head>
+
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+        Sync-Player
+      </h1>
+
+      <video id="video" width="800" height="600" controls>
+        <source src="1.mp4">
+          <!-- <source src="https://drive.google.com/file/d/1nuXwcmd89dkTqBENk9VrkULaZ0M5z7Pv/view?usp=sharing"> -->
+      </video>
+
+      <div class="columns gray">
+        <div class="column" id="nagasa">
+          video-length
+        </div>
+        <div class="column" id="currentTime">
+          currentTime
+        </div>
+        <div class="column" id="ended">
+          Ended?
+        </div>
+      </div>
+      <button id="player" class="button is-primary">再生</button>
+    </div>
+  </section>
+  <script defer src="./sync-play.js"></script>
+</body>
+
+</html>
