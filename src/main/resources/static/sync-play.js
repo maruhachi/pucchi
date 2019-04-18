@@ -16,13 +16,14 @@ const handlers = {
 
     // サーバと同期
     synchro: function () {
-
-        const eventSource = new EventSource('./serval/');
+        document.querySelector('#logArea').value += 'request eventSource\n';
+       
+        const eventSource = new EventSource('http://localhost:8081/sync/');
         eventSource.onopen = function () {
-            document.querySelector('#logtxt').value += 'eventSource open\n';
+            document.querySelector('#logArea').value += 'eventSource open\n';
         };
         eventSource.onerror = function () {
-            document.querySelector('#logtxt').value += 'eventSource error\n';
+            document.querySelector('#logArea').value += 'eventSource error\n';
         };
         eventSource.onmessage = function (event) {
             console.log(event);
@@ -32,11 +33,18 @@ const handlers = {
                 // たのしー！
                 data: event.data
             };
-            document.querySelector('#logtxt').value += 'event=' + JSON.stringify(eventInfo) + "\n";
+            document.querySelector('#logArea').value += 'event=' + JSON.stringify(eventInfo) + "\n";
             document.querySelector('#tanoshiCount').innerHTML = eventInfo.data + "たのしー！";
             handlers.servalPopup();
         }, false);
         window.currentEventSource = eventSource;
+    },
+
+    sendEvent: function() {
+        postData(`http://example.com/answer`, {answer: 42})
+            // JSON-string from `response.json()` call
+            .then(data => console.log(JSON.stringify(data))) 
+            .catch(error => console.error(error));
     },
 
     playVideo: function () {
@@ -72,12 +80,8 @@ const handlers = {
 
     tanoshi: function () {
         fetch("./tanoshi/")
-            .then((response) = > response.text()
-    )
-    .
-        then((text) = > document.querySelector('#logtxt').value += "たのしー！\n"
-    )
-        ;
+            .then((response) => response.text()  )
+            . then((text) => document.querySelector('#logArea').value += "たのしー！\n");
     }
 
 };
