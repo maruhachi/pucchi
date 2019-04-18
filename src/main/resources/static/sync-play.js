@@ -26,13 +26,21 @@ function synchro() {
     eventSource.onmessage = function (event) {
         console.log(event);
     };
-    eventSource.addEventListener('tanoshi-count', function (event) {
+    eventSource.addEventListener('start', function (event) {
         const eventInfo = {
-            // たのしー！
             data: event.data
         };
         document.querySelector('#logArea').value += 'event=' + JSON.stringify(eventInfo) + "\n";
-        handlers.servalPopup();
+        v.currentTime = eventInfo.data
+        v.play();
+    }, false);
+    eventSource.addEventListener('stop', function (event) {
+        const eventInfo = {
+            data: event.data
+        };
+        document.querySelector('#logArea').value += 'event=' + JSON.stringify(eventInfo) + "\n";
+        v.currentTime = eventInfo.data
+        v.pause();
     }, false);
     window.currentEventSource = eventSource;
 };
@@ -53,7 +61,11 @@ function playVideo() {
     //再生完了の表示をクリア
     document.getElementById("logArea").value += "call playVideo\n";
 
-    sendEvent("start");
+    fetch("./control/start?currentTime=" + v.currentTime ,{
+        method : 'GET'
+        })
+    .then(data => console.log(JSON.stringify(data)))
+    .catch(error => console.error(error));
     //動画を再生
     v.play();
 
@@ -62,7 +74,11 @@ function playVideo() {
 // 動画を一時停止
 function stopVideo(){
     v.pause();
-    sendEvent("pause");
+    fetch("./control/stop?currentTime=" + v.currentTime ,{
+        method : 'GET'
+        })
+    .then(data => console.log(JSON.stringify(data)))
+    .catch(error => console.error(error));
 };
 
 // 動画が再生中
