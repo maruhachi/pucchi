@@ -16,6 +16,9 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<encoding>UTF-8</encoding>
+		<inputEncoding>UTF-8</inputEncoding>
+		<outputEncoding>UTF-8</outputEncoding>
 	</properties>
 
 	<dependencies>
