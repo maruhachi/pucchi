@@ -18,7 +18,7 @@ const handlers = {
     synchro: function () {
         document.querySelector('#logArea').value += 'request eventSource\n';
        
-        const eventSource = new EventSource('http://localhost:8081/sync/');
+        const eventSource = new EventSource('./sync/');
         eventSource.onopen = function () {
             document.querySelector('#logArea').value += 'eventSource open\n';
         };
