@@ -3,6 +3,7 @@
  */
 var v = document.getElementById("video");
 
+var logger = document.querySelector('#logArea');
 
 /**
  * 関数定義
@@ -14,14 +15,14 @@ function getDuration() {
 
 // サーバと同期
 function synchro() {
-    document.querySelector('#logArea').value += 'request eventSource\n';
+    logger.value += 'request eventSource\n';
 
     const eventSource = new EventSource('./sync/');
     eventSource.onopen = function () {
-        document.querySelector('#logArea').value += 'eventSource open\n';
+        logger.value += 'eventSource open\n';
     };
     eventSource.onerror = function () {
-        document.querySelector('#logArea').value += 'eventSource error\n';
+        logger.value += 'eventSource error\n';
     };
     eventSource.onmessage = function (event) {
         console.log(event);
@@ -30,31 +31,30 @@ function synchro() {
         const eventInfo = {
             data: event.data
         };
-        document.querySelector('#logArea').value += 'event=' + JSON.stringify(eventInfo) + "\n";
+        logger.value += 'event=' + JSON.stringify(eventInfo) + "\n";
         v.currentTime = eventInfo.data
-        v.play();
+        if(v.paused == true){
+            v.play();
+        }
     }, false);
     eventSource.addEventListener('stop', function (event) {
+        if(v.paused == false){
+            v.pause();
+        }
         const eventInfo = {
             data: event.data
         };
-        document.querySelector('#logArea').value += 'event=' + JSON.stringify(eventInfo) + "\n";
+        logger.value += 'event=' + JSON.stringify(eventInfo) + "\n";
         v.currentTime = eventInfo.data
-        v.pause();
     }, false);
+    eventSource.addEventListener('seeked', function (event) {
+            const eventInfo = {
+                data: event.data
+            };
+            logger.value += 'event=' + JSON.stringify(eventInfo) + "\n";
+            v.currentTime = eventInfo.data
+        }, false);
     window.currentEventSource = eventSource;
-};
-
-function sendEvent(eventType) {
-    var data = {"eventType": eventType, "currentTime": v.currentTime};
-    console.log("data = " + data);
-    fetch("./control/",{
-            method : 'POST',
-            body : data,
-            })
-        // JSON-string from `response.json()` call
-        .then(data => console.log(JSON.stringify(data)))
-        .catch(error => console.error(error));
 };
 
 function playVideo() {
@@ -66,44 +66,30 @@ function playVideo() {
         })
     .then(data => console.log(JSON.stringify(data)))
     .catch(error => console.error(error));
-    //動画を再生
-    v.play();
-
 };
 
 // 動画を一時停止
 function stopVideo(){
-    v.pause();
-    fetch("./control/stop?currentTime=" + v.currentTime ,{
+    fetch("./control/stop",{
         method : 'GET'
         })
     .then(data => console.log(JSON.stringify(data)))
     .catch(error => console.error(error));
 };
 
-// 動画が再生中
-function updateTime(){
-    document.getElementById("currentTime").innerHTML = v.currentTime;
-};
-
 // 動画のシークバーを移動して確定
 function seeked(){
-    sendEvent("seeked", v.currentTime);
+    fetch("./control/seeked?currentTime=" + v.currentTime ,{
+            method : 'GET'
+            })
+        .then(data => console.log(JSON.stringify(data)))
+        .catch(error => console.error(error));
 };
 
-function servalPopup() {
-    // 何秒か経ったらクラス外す（フレームアウト
-    setTimeout(function () {
-        target.className = "";
-    }, 2100);
+// 動画が再生中
+function updateTime(){
+//    document.getElementById("currentTime").innerHTML = v.currentTime;
 };
-
-function tanoshi() {
-    fetch("./tanoshi/")
-        .then((response) => response.text()  )
-        . then((text) => document.querySelector('#logArea').value += "たのしー！\n");
-};
-
 
 /**
  * 画面ロード時のイベント
@@ -128,4 +114,7 @@ document.getElementById("stoper").addEventListener("click", stopVideo);
 //現在の再生位置（秒）を表示
 v.addEventListener("timeupdate", updateTime);
 
-v.addEventListener("seeked", seeked);
+v.addEventListener("play", playVideo);
+// TODO: currentTimeの上書きはseekedとみなされるためループしちゃう
+//v.addEventListener("seeked", seeked);
+v.addEventListener("pause", stopVideo);

@@ -19,7 +19,7 @@ public class RemoconApiController {
     @GetMapping("/start")
     public String start(@RequestParam("currentTime")String currentTime){
 
-        log.info("event = "  + currentTime);
+        log.info("event = start, currentTime = "  + currentTime);
 
         for (SseEmitter emitter : sseList.get()){
             try {
@@ -47,11 +47,33 @@ public class RemoconApiController {
                         SseEmitter.event()
                                 .id(UUID.randomUUID().toString())
                                 .name("stop")
+                                .data("stoped")
                 );
             }catch(Exception e){
                 e.printStackTrace();
             }
         }
         return "stoped";
+    }
+
+
+    @GetMapping("/seeked")
+    public String seeked(@RequestParam("currentTime")String currentTime){
+
+        log.info("event = seeked, currentTime= "  + currentTime);
+
+        for (SseEmitter emitter : sseList.get()){
+            try {
+                emitter.send(
+                        SseEmitter.event()
+                                .id(UUID.randomUUID().toString())
+                                .name("seeked")
+                                .data(currentTime)
+                );
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        return "seeked";
     }
 }
